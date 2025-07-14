@@ -1,52 +1,49 @@
 <?php
 
 namespace App\Controllers;
-
 use App\Models\UserModel;
-use CodeIgniter\Controller;
 
-class Auth extends Controller
+class Auth extends BaseController
 {
-    public function login()
-    {
-        return view('auth/login');
-    }
-
-    public function doLogin()
-    {
-        $session = session();
-        $model = new UserModel();
-
-        $user = $model->where('email', $this->request->getPost('email'))->first();
-        if ($user && password_verify($this->request->getPost('password'), $user['password'])) {
-            $session->set([
-                'user_id' => $user['id'],
-                'user_name' => $user['name'],
-                'role' => $user['role'],
-                'is_logged_in' => true
-            ]);
-            return redirect()->to('/');
-        }
-
-        return redirect()->back()->with('error', 'Email atau password salah');
-    }
-
     public function register()
     {
+        if ($this->request->getMethod() === 'post') {
+            $userModel = new UserModel();
+
+            $userModel->save([
+                'name'     => $this->request->getPost('name'),
+                'email'    => $this->request->getPost('email'),
+                'password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
+                'role'     => 'user',
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+
+            return redirect()->to('/login');
+        }
+
         return view('auth/register');
     }
 
-    public function doRegister()
+    public function login()
     {
-        $model = new UserModel();
+        if ($this->request->getMethod() === 'post') {
+            $userModel = new UserModel();
+            $user = $userModel->where('email', $this->request->getPost('email'))->first();
 
-        $data = [
-            'name' => $this->request->getPost('name'),
-            'email' => $this->request->getPost('email'),
-            'password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
-        ];
-        $model->insert($data);
-        return redirect()->to('/login');
+            if ($user && password_verify($this->request->getPost('password'), $user['password'])) {
+                session()->set([
+                    'user_id' => $user['id'],
+                    'user_name' => $user['name'],
+                    'role' => $user['role'],
+                    'is_logged_in' => true
+                ]);
+                return redirect()->to('/');
+            }
+
+            return redirect()->back()->with('error', 'Login gagal. Email atau password salah.');
+        }
+
+        return view('auth/login');
     }
 
     public function logout()

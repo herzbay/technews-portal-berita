@@ -4,7 +4,7 @@
     <!-- Logo dan Brand -->
     <div class="flex items-center gap-2">
       <img src="<?= base_url('assets/logo.png') ?>" alt="Logo" class="h-8 w-8">
-      <a href="/" class="text-xl font-bold text-blue-700 hover:text-blue-800">TechNews</a>
+      <a href="/" class="text-xl font-bold text-blue-700 hover:text-blue-800">NEWSTECHLY</a>
     </div>
 
     <!-- Navigasi User -->

@@ -5,7 +5,7 @@
 <nav class="flex items-center justify-between bg-white shadow px-4 py-3 mb-4">
   <div class="flex items-center gap-2">
     <img src="<?= base_url('assets/logo.png') ?>" alt="Logo" class="h-8 w-8">
-    <h1 class="text-xl font-bold text-blue-700">TechNews</h1>
+    <h1 class="text-xl font-bold text-blue-700">NEWSTECHLY</h1>
   </div>
   <div>
     <?php if (session('is_logged_in')): ?>

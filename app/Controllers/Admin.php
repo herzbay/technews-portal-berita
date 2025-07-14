@@ -2,16 +2,19 @@
 
 namespace App\Controllers;
 
-use CodeIgniter\Controller;
-
-class Admin extends Controller
+class Admin extends BaseController
 {
+    public function __construct()
+    {
+        // Proteksi: hanya admin yang boleh akses 
+        if (!session('is_logged_in') || session('role') !== 'admin') {
+            redirect()->to('/')->send(); 
+            exit;
+        }
+    }
+
     public function index()
     {
-        if (session('role') !== 'admin') {
-            return redirect()->to('/');
-        }
-
         return view('admin/dashboard');
     }
 }

@@ -29,7 +29,9 @@ $routes->get('auth/googleCallback', 'Auth::googleCallback');
 // =======================
 // 🛠️ Admin (bisa dikembangkan)
 // =======================
-$routes->group('admin', function ($routes) {
+$routes->group('admin', ['filter' => 'isAdmin'], function($routes) {
     $routes->get('/', 'Admin::index');
-    // $routes->add('news', 'AdminNews::index'); // contoh
+    
 });
+
+

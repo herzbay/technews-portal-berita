@@ -1,6 +1,5 @@
 <nav class="bg-white shadow px-4 py-3 mb-6">
   <div class="container mx-auto flex items-center justify-between">
-    
     <!-- Logo dan Brand -->
     <div class="flex items-center gap-2">
       <img src="<?= base_url('assets/logo.png') ?>" alt="Logo" class="h-8 w-8">
@@ -20,6 +19,5 @@
         <a href="/register" class="text-blue-600 hover:underline">Register</a>
       <?php endif; ?>
     </div>
-
   </div>
 </nav>

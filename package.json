@@ -4,8 +4,8 @@
   "description": "Portal berita teknologi menggunakan CodeIgniter 4 + TailwindCSS",
   "main": "index.js",
   "scripts": {
-    "build": "tailwindcss -i ./resources/css/main.css -o ./public/output.css",
-    "watch": "tailwindcss -i ./resources/css/main.css -o ./public/output.css --watch"
+    "build": "tailwindcss -i ./public/css/app.css -o ./public/css/output.css",
+    "watch": "tailwindcss -i ./public/css/app.css -o ./public/css/output.css --watch"
   },
   "keywords": [],
   "author": "Bayu Herlambang",

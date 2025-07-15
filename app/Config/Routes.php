@@ -6,10 +6,12 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 
-// =======================
 // 🏠 Halaman Utama
-// =======================
 $routes->get('/', 'Home::index');
+
+$routes->get('/news/(:segment)', 'NewsController::detail/$1');
+$routes->post('/comments/add', 'CommentController::add'); // untuk HTMX
+$routes->get('/comments/list/(:num)', 'CommentController::list/$1'); // untuk load komentar
 
 // =======================
 // 🔐 Autentikasi Manual

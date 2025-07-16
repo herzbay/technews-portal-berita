@@ -42,21 +42,26 @@ class AuthController extends BaseController
         $user = $userModel->where('email', $email)->first();
 
         if ($user && password_verify($password, $user['password'])) {
-        session()->set([
-            'user_id' => $user['id'],
-            'user_name' => $user['name'],
-            'role' => $user['role'],
-            'user_points' => $user['total_points'], 
-            'logged_in' => true
-        ]);
+            session()->set([
+                'user_id' => $user['id'],
+                'user_name' => $user['name'],
+                'role' => $user['role'],
+                'user_points' => $user['total_points'],
+                'logged_in' => true
+            ]);
 
-            session()->setFlashdata('success', 'Login berhasil! Selamat datang, '.$user['name']);
-            return redirect()->to('/');
+            // ✅ Redirect sesuai role
+            if ($user['role'] === 'admin') {
+                return redirect()->to('/admin')->with('success', 'Login berhasil! Selamat datang, Admin '.$user['name']);
+            }
+
+            return redirect()->to('/')->with('success', 'Login berhasil! Selamat datang, '.$user['name']);
         }
 
         session()->setFlashdata('error', 'Email atau password salah.');
         return redirect()->back();
     }
+
 
     public function logout()
     {

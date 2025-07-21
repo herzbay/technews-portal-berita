@@ -130,7 +130,7 @@ function animatePoints(newPoints) {
 /** ✅ HTMX + CSRF Auto Attach */
 document.body.addEventListener('htmx:configRequest', (event) => {
     let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    if (!token) token = getCookie('csrf_cookie_name'); // fallback
+    if (!token) token = getCookie('csrf_cookie_name'); // fallback untuk CodeIgniter
     if (token) event.detail.headers['X-CSRF-TOKEN'] = token;
 });
 
@@ -147,9 +147,10 @@ htmx.on('htmx:error', () => {
     showToast('Terjadi kesalahan koneksi', 'error');
 });
 
-// ✅ Global Response Handler
+/** ✅ Global Response Handler */
 htmx.on('htmx:afterRequest', function(evt) {
     if (!evt.detail.xhr.response) return;
+
     try {
         const data = JSON.parse(evt.detail.xhr.response);
 
@@ -162,24 +163,26 @@ htmx.on('htmx:afterRequest', function(evt) {
         if (data.message) showToast(data.message, 'success');
         if (data.newPoints) animatePoints(data.newPoints);
 
-        // ✅ Komentar baru
+        // ✅ Tambah komentar langsung
         if (data.html) {
             const commentList = document.querySelector('#comment-list');
             if (commentList) {
                 const temp = document.createElement('div');
-                temp.innerHTML = data.html;
+                temp.innerHTML = data.html.trim();
                 const newComment = temp.firstElementChild;
-                commentList.insertBefore(newComment, commentList.firstChild);
+                if (newComment) {
+                    commentList.insertBefore(newComment, commentList.firstChild);
 
-                // ✅ Animasi fade-in
-                requestAnimationFrame(() => {
-                    newComment.classList.remove('opacity-0', 'translate-y-2');
-                    newComment.classList.add('opacity-100', 'translate-y-0');
-                });
+                    // ✅ Animasi muncul
+                    requestAnimationFrame(() => {
+                        newComment.classList.remove('opacity-0', 'translate-y-3');
+                        newComment.classList.add('opacity-100', 'translate-y-0');
+                    });
+                }
             }
         }
 
-        // ✅ Hapus komentar + animasi
+        // ✅ Hapus komentar dengan animasi
         if (data.commentId) {
             const el = document.getElementById('comment-' + data.commentId);
             if (el) {
@@ -190,11 +193,7 @@ htmx.on('htmx:afterRequest', function(evt) {
             }
         }
 
-        // ✅ Update poin jika dikirim
-        if (data.newPoints) {
-            animatePoints(data.newPoints);
-        }
-
+        // ✅ Update CSRF jika dikirim
         if (data.csrfToken) {
             document.querySelector('meta[name="csrf-token"]').setAttribute('content', data.csrfToken);
         }
@@ -202,7 +201,6 @@ htmx.on('htmx:afterRequest', function(evt) {
         console.error('Response bukan JSON:', e);
     }
 });
-
 </script>
 </body>
 </html>

@@ -179,6 +179,22 @@ htmx.on('htmx:afterRequest', function(evt) {
             }
         }
 
+        // ✅ Hapus komentar + animasi
+        if (data.commentId) {
+            const el = document.getElementById('comment-' + data.commentId);
+            if (el) {
+                el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                el.style.opacity = '0';
+                el.style.transform = 'translateX(-20px)';
+                setTimeout(() => el.remove(), 400);
+            }
+        }
+
+        // ✅ Update poin jika dikirim
+        if (data.newPoints) {
+            animatePoints(data.newPoints);
+        }
+
         if (data.csrfToken) {
             document.querySelector('meta[name="csrf-token"]').setAttribute('content', data.csrfToken);
         }

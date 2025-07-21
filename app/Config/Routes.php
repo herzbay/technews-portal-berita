@@ -17,6 +17,7 @@ $routes->get('/news/(:segment)', 'NewsController::detail/$1');
 // =======================
 $routes->get('comments/list/(:num)', 'CommentController::list/$1');
 $routes->post('comments/add/(:num)', 'CommentController::add/$1');
+$routes->delete('comments/delete/(:num)', 'CommentController::delete/$1');
 
 // =======================
 // ❤️ Like & Share - CSRF sudah dikecualikan di global  

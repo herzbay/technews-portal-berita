@@ -6,10 +6,22 @@
 
     <?php if (!empty($comments)): ?>
         <?php foreach ($comments as $c): ?>
-            <div class="comment-item p-4 bg-white dark:bg-gray-800 rounded-lg shadow mb-3 border border-gray-200 dark:border-gray-700 transition hover:shadow-lg">
+            <div class="comment-item relative p-4 bg-white dark:bg-gray-800 rounded-lg shadow mb-3 border border-gray-200 dark:border-gray-700 transition hover:shadow-lg" id="comment-<?= esc($c['id']) ?>">
                 <div class="flex items-center justify-between mb-2">
                     <p class="font-semibold text-blue-600"><?= esc($c['username'] ?? 'Anonim') ?></p>
-                    <small class="text-gray-400 text-xs"><?= date('d M Y H:i', strtotime($c['created_at'])) ?></small>
+                    <div class="flex items-center gap-3 text-gray-400 text-xs">
+                        <small><?= date('d M Y H:i', strtotime($c['created_at'])) ?></small>
+                        <?php if (session()->get('logged_in') && (session()->get('role') === 'admin' || session()->get('user_id') == $c['user_id'])): ?>
+                            <button 
+                                hx-delete="/comments/delete/<?= $c['id'] ?>"
+                                hx-swap="none"
+                                hx-confirm="Yakin hapus komentar ini?"
+                                class="text-red-500 hover:text-red-700 transition"
+                                aria-label="Hapus komentar">
+                                🗑
+                            </button>
+                        <?php endif; ?>
+                    </div>
                 </div>
                 <p class="text-gray-800 dark:text-gray-200 leading-relaxed"><?= esc($c['content']) ?></p>
             </div>
@@ -44,7 +56,7 @@ function animateComments() {
             comment.style.transition = 'all 0.3s ease';
             comment.style.opacity = '1';
             comment.style.transform = 'translateY(0)';
-        }, index * 70); // efek stagger
+        }, index * 70);
     });
 }
 </script>

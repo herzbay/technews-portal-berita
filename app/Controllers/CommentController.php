@@ -77,6 +77,66 @@ class CommentController extends BaseController
         }
     }
 
+    public function delete($commentId)
+    {
+        if (!session()->get('logged_in')) {
+            return $this->response->setStatusCode(401)->setJSON([
+                'error' => 'Anda harus login untuk menghapus komentar',
+                'redirect' => '/login'
+            ]);
+        }
+
+        try {
+            $commentModel = new CommentModel();
+            $comment = $commentModel->find($commentId);
+
+            if (!$comment) {
+                return $this->failResponse('Komentar tidak ditemukan');
+            }
+
+            $userId = session()->get('user_id');
+            $role = session()->get('role') ?? 'user';
+
+            // ✅ Hanya pemilik atau admin
+            if ($comment['user_id'] != $userId && $role !== 'admin') {
+                return $this->failResponse('Anda tidak memiliki izin menghapus komentar ini');
+            }
+
+            // ✅ Hapus komentar
+            $commentModel->delete($commentId);
+
+            // ✅ Hanya jika user pemilik (bukan admin)
+            if ($role !== 'admin') {
+                // Cek apakah user masih punya komentar lain di berita yang sama
+                $hasOtherComments = $commentModel
+                    ->where('news_id', $comment['news_id'])
+                    ->where('user_id', $userId)
+                    ->countAllResults();
+
+                if ($hasOtherComments == 0) {
+                    // ✅ Tidak ada komentar lain → kurangi poin
+                    $pointsToDeduct = 5; // Sesuai aturan poin komentar
+                    $userModel = new UserModel();
+                    $currentPoints = $userModel->getPoints($userId);
+                    $newPoints = max(0, $currentPoints - $pointsToDeduct);
+                    $userModel->updatePoints($userId, $newPoints);
+                    session()->set('user_points', $newPoints);
+                }
+            }
+
+            return $this->response->setJSON([
+                'status'     => 'success',
+                'message'    => 'Komentar berhasil dihapus',
+                'commentId'  => $commentId,
+                'newPoints'  => session()->get('user_points') // Untuk update real-time
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', '[ERROR] Delete Comment: ' . $e->getMessage());
+            return $this->failResponse('Terjadi kesalahan, coba lagi nanti');
+        }
+    }
+
+
     private function addPoints(int $userId, int $newsId, string $action, int $points): int
     {
         $pointLogModel = new PointLogsModel();

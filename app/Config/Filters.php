@@ -18,11 +18,6 @@ class Filters extends BaseFilters
     /**
      * Configures aliases for Filter classes to
      * make reading things nicer and simpler.
-     *
-     * @var array<string, class-string|list<class-string>>
-     *
-     * [filter_name => classname]
-     * or [filter_name => [classname1, classname2, ...]]
      */
     public array $aliases = [
         'csrf'     => CSRF::class,
@@ -35,22 +30,13 @@ class Filters extends BaseFilters
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
-        'isAdmin'  => \App\Filters\IsAdmin::class,
+        'guest'    => \App\Filters\GuestFilter::class,
         'authAdmin' => \App\Filters\AuthAdmin::class,
+        'csrf-except' => \App\Filters\CsrfExcept::class,
     ];
 
     /**
      * List of special required filters.
-     *
-     * The filters listed here are special. They are applied before and after
-     * other kinds of filters, and always applied even if a route does not exist.
-     *
-     * Filters set by default provide framework functionality. If removed,
-     * those functions will no longer work.
-     *
-     * @see https://codeigniter.com/user_guide/incoming/filters.html#provided-filters
-     *
-     * @var array{before: list<string>, after: list<string>}
      */
     public array $required = [
         'before' => [
@@ -65,52 +51,35 @@ class Filters extends BaseFilters
     ];
 
     /**
-     * List of filter aliases that are always
-     * applied before and after every request.
-     *
-     * @var array<string, array<string, array<string, string>>>|array<string, list<string>>
+     * 🔥 FIXED: Global CSRF dengan exception yang benar
      */
     public array $globals = [
         'before' => [
-            // 'honeypot',
-            'csrf',
-            // 'invalidchars',
+            'csrf' => [
+                'except' => [
+                    'like/*', 
+                    'share/*', 
+                    'comments/*'  // 🔥 FIXED: Semua route comments dikecualikan
+                ]
+            ]
         ],
-        'after' => [
-            'toolbar',
-            // 'honeypot',
-            // 'secureheaders',
-        ],
+        'after'  => []
     ];
 
     /**
      * List of filter aliases that works on a
      * particular HTTP method (GET, POST, etc.).
-     *
-     * Example:
-     * 'POST' => ['foo', 'bar']
-     *
-     * If you use this, you should disable auto-routing because auto-routing
-     * permits any HTTP method to access a controller. Accessing the controller
-     * with a method you don't expect could bypass the filter.
-     *
-     * @var array<string, list<string>>
      */
-    public array $methods = [];
+    public array $methods = [
+        // 🔥 REMOVED: Tidak diperlukan karena sudah dihandle di $globals
+    ];
 
     /**
      * List of filter aliases that should run on any
      * before or after URI patterns.
-     *
-     * Example:
-     * 'isLoggedIn' => ['before' => ['account/*', 'profiles/*']]
-     *
-     * @var array<string, array<string, list<string>>>
      */
     public array $filters = [
-        'before' => [
-            'auth' => ['except' => ['/', 'login', 'register', 'logout']]
-        ],
-        'after' => []
+        // 🔥 OPTIONAL: Tambahkan auth filter untuk comments jika diperlukan
+        // 'auth' => ['before' => ['comments/add/*']]
     ];
 }

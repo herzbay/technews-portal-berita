@@ -4,26 +4,41 @@ namespace App\Controllers;
 
 use App\Models\NewsModel;
 use App\Models\LikesModel;
+use CodeIgniter\Exceptions\PageNotFoundException;
 
 class NewsController extends BaseController
 {
-    public function detail($slug)
+    /**
+     * ✅ Tampilkan detail berita berdasarkan slug.
+     */
+    public function detail(string $slug)
     {
         $newsModel = new NewsModel();
         $likeModel = new LikesModel();
 
-        // Ambil berita berdasarkan slug
+        // ✅ Ambil berita berdasarkan slug
         $news = $newsModel->where('slug', $slug)->first();
+
         if (!$news) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Berita tidak ditemukan');
+            throw PageNotFoundException::forPageNotFound('Berita tidak ditemukan');
         }
 
-        // Hitung like untuk berita ini
-        $likeCount = $likeModel->where('news_id', $news['id'])->countAllResults();
+        // ✅ Hitung total like
+        $likeCount = $likeModel->countLikes((int) $news['id']);
 
+        // ✅ Cek apakah user sudah like (jika login)
+        $isLiked = false;
+        if (session()->get('logged_in')) {
+            $userId = (int) session()->get('user_id');
+            $isLiked = (bool) $likeModel->isLiked($userId, (int) $news['id']);
+        }
+
+        // ✅ Kirim data ke view
         return view('news/detail', [
-            'news' => $news,
-            'likeCount' => $likeCount
+            'title'      => esc($news['title']) . ' | NEWSTECHLY',
+            'news'       => $news,
+            'likeCount'  => $likeCount,
+            'isLiked'    => $isLiked
         ]);
     }
 }

@@ -147,53 +147,46 @@ htmx.on('htmx:error', () => {
     showToast('Terjadi kesalahan koneksi', 'error');
 });
 
-/** ✅ Global Response Handler */
+// ✅ Global Response Handler
 htmx.on('htmx:afterRequest', function(evt) {
     if (!evt.detail.xhr.response) return;
     try {
         const data = JSON.parse(evt.detail.xhr.response);
 
-        // ✅ Jika error
         if (data.error) {
             showToast(data.error, 'error');
             if (data.redirect) setTimeout(() => window.location.href = data.redirect, 1500);
             return;
         }
 
-        // ✅ Success Toast
         if (data.message) showToast(data.message, 'success');
+        if (data.newPoints) animatePoints(data.newPoints);
 
-        // ✅ Update Poin
-        if (data.newPoints) {
-            console.log('Update poin:', data.newPoints);
-            animatePoints(data.newPoints);
-        }
-
-        // ✅ Update Like Count & Icon
-        if (data.count !== undefined) {
-            const likeCountEl = document.getElementById('likeCount');
-            if (likeCountEl) likeCountEl.textContent = data.count;
-        }
-        if (data.icon) {
-            const likeIcon = document.getElementById('likeIcon');
-            if (likeIcon) likeIcon.textContent = data.icon;
-        }
-
-        // ✅ Tambahkan Komentar Baru
+        // ✅ Komentar baru
         if (data.html) {
             const commentList = document.querySelector('#comment-list');
-            if (commentList) commentList.insertAdjacentHTML('afterbegin', data.html);
+            if (commentList) {
+                const temp = document.createElement('div');
+                temp.innerHTML = data.html;
+                const newComment = temp.firstElementChild;
+                commentList.insertBefore(newComment, commentList.firstChild);
+
+                // ✅ Animasi fade-in
+                requestAnimationFrame(() => {
+                    newComment.classList.remove('opacity-0', 'translate-y-2');
+                    newComment.classList.add('opacity-100', 'translate-y-0');
+                });
+            }
         }
 
-        // ✅ Update CSRF Meta jika server mengirim token baru
         if (data.csrfToken) {
             document.querySelector('meta[name="csrf-token"]').setAttribute('content', data.csrfToken);
         }
-
     } catch (e) {
         console.error('Response bukan JSON:', e);
     }
 });
+
 </script>
 </body>
 </html>

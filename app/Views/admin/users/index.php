@@ -33,6 +33,7 @@
                                 Edit
                             </a>
                             <form action="/admin/users/delete/<?= $user['id'] ?>" method="post" onsubmit="return confirm('Yakin hapus user ini?');">
+                                <?= csrf_field() ?>
                                 <button type="submit" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">
                                     Hapus
                                 </button>

@@ -62,4 +62,6 @@ $routes->group('admin', ['filter' => 'authAdmin'], function ($routes) {
     $routes->get('users/edit/(:num)', 'Admin\UserController::edit/$1');
     $routes->post('users/update/(:num)', 'Admin\UserController::update/$1');
     $routes->get('users/delete/(:num)', 'Admin\UserController::delete/$1');
+    $routes->post('users/delete/(:num)', 'Admin\UserController::delete/$1');
+
 });

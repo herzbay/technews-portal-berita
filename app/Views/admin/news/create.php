@@ -4,6 +4,7 @@
 <h1 class="text-2xl font-bold mb-6">Tambah Berita</h1>
 
 <form action="/admin/news/store" method="post" enctype="multipart/form-data" class="space-y-4 bg-white dark:bg-gray-800 p-6 rounded shadow">
+    <?= csrf_field() ?>
     <div>
         <label class="block font-semibold mb-2">Judul</label>
         <input type="text" name="title" required class="w-full p-2 border rounded dark:bg-gray-700">

@@ -41,7 +41,7 @@ class NewsController extends BaseController
             'created_at'  => date('Y-m-d H:i:s')
         ]);
 
-        session()->setFlashdata('success', 'Berita berhasil ditambahkan!');
+        session()->setFlashdata('success', '✅ Berita berhasil ditambahkan!');
         return redirect()->to('/admin/news');
     }
 
@@ -82,7 +82,7 @@ class NewsController extends BaseController
             'image_url'   => $imagePath
         ]);
 
-        session()->setFlashdata('success', 'Berita berhasil diperbarui!');
+        session()->setFlashdata('success', '✅ Berita berhasil diperbarui!');
         return redirect()->to('/admin/news');
     }
 
@@ -91,7 +91,7 @@ class NewsController extends BaseController
         $model = new NewsModel();
         $model->delete($id);
 
-        session()->setFlashdata('success', 'Berita berhasil dihapus!');
+        session()->setFlashdata('success', '✅ Berita berhasil dihapus!');
         return redirect()->to('/admin/news');
     }
 }
